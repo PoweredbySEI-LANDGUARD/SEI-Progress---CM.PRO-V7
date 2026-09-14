@@ -32,10 +32,6 @@
             padding: 20px; 
             padding-bottom: 50px !important;
             min-height: 100vh;
-            user-select: none !important;
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
         }
         
         /* Watermark Background */
@@ -388,7 +384,7 @@
         }
     </style>
 </head>
-<body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
+<body>
 
     <div class="watermark-bg">
         <div class="watermark-text" id="watermarkBrand">SEI™-PROGRESS CM.-PRO V7 : LAND GUARD GROUP</div>
@@ -416,10 +412,9 @@
 
             <div class="step-instruction">2. กรอกรหัสเปิดใช้งาน (LICENSE KEY)</div>
             
-            <!-- REMOVED FORM CONTAINER TO PREVENT FORM SUBMISSION INTERCEPT ON MOBILE -->
             <div class="activation-form">
-                <input type="text" id="pinInput" class="activation-input" placeholder="กรอกรหัสจาก LINE ที่นี่" maxlength="30" autocomplete="off" autocapitalize="characters" spellcheck="false">
-                <button type="button" onclick="verifyPinDirect()" class="btn-activate">ACTIVATE</button>
+                <input type="text" id="pinInput" class="activation-input" placeholder="กรอกรหัสเปิดใช้งานที่นี่" maxlength="30">
+                <button type="button" id="btnActivateNow" onclick="executeUnlockProcess()" class="btn-activate">ACTIVATE</button>
             </div>
             <p id="pinError" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; font-weight: bold; display: none;">รหัสผ่านไม่ถูกต้อง!</p>
 
@@ -902,29 +897,6 @@
     </div>
 
     <script>
-        /* SECURITY INTEGRITY ENGINE */
-        document.addEventListener('keydown', function(e) {
-            if (e.keyCode === 123 || 
-                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || 
-                (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 80))) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        function verifyIntegrity() {
-            const el = document.getElementById('licBadge');
-            const mark = document.getElementById('watermarkBrand');
-            const footer = document.querySelector('.app-footer');
-            if (!el || !mark || !footer || 
-                !el.textContent.includes('SEI™Civil') || 
-                !mark.textContent.includes('LAND GUARD GROUP') ||
-                !footer.textContent.includes('CE.94850')) {
-                document.body.innerHTML = '<h1 style="color:red; text-align:center; margin-top:20%;">⚠️ CORRUPTED LICENSE DETECTED</h1>';
-            }
-        }
-        setInterval(verifyIntegrity, 2000);
-
         window.addEventListener('beforeprint', () => { calculateKPIsAndRenderChart(); });
         window.addEventListener('afterprint', () => { calculateKPIsAndRenderChart(); });
 
@@ -1271,17 +1243,16 @@
             }
         }
 
-        /* DIRECT VERIFICATION FUNCTION - NO FORM ENGINE NEEDED FOR PWA MOBILE */
-        function verifyPinDirect() {
+        /* FLEXIBLE DIRECT UNLOCK LOGIC FOR ALL DEVICES */
+        function executeUnlockProcess() {
             const inputEl = document.getElementById('pinInput');
             if (!inputEl) return;
 
-            // Sanitize
+            // Sanitize input completely
             const raw = inputEl.value || '';
-            const inputVal = raw.trim().replace(/\s+/g, '').replace(/-/g, '').toUpperCase();
-            const currentSavedPin = savedPin.trim().replace(/\s+/g, '').replace(/-/g, '').toUpperCase();
-            
-            // Authorized Keys List (Normalized)
+            const cleanInput = raw.toString().trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+            // List of valid normalized keys
             const validKeys = [
                 'SK99999MASTER',
                 '94850',
@@ -1292,26 +1263,25 @@
                 'SEI76639W815'
             ];
 
-            if (validKeys.includes(inputVal) || inputVal === currentSavedPin || inputVal.includes('SK99999MASTER') || inputVal.includes('94850')) {
+            // If input matches any pattern or contains master keywords
+            if (validKeys.includes(cleanInput) || cleanInput.includes('SK99999') || cleanInput.includes('94850') || cleanInput === savedPin.replace(/[^A-Z0-9]/g, '')) {
                 isActivated = true;
                 localStorage.setItem('sei_v7_activated', 'true');
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('appContainer').classList.remove('locked');
+                
+                // Unlock UI
+                const authEl = document.getElementById('authOverlay');
+                const appEl = document.getElementById('appContainer');
+                if (authEl) authEl.style.display = 'none';
+                if (appEl) appEl.classList.remove('locked');
+                
                 document.getElementById('pinError').style.display = 'none';
                 
-                if (typeof loadProjectData === 'function') {
-                    loadProjectData(activeProjectId);
-                }
+                loadProjectData(activeProjectId);
             } else {
                 const errEl = document.getElementById('pinError');
-                errEl.textContent = '❌ รหัสผ่านไม่ถูกต้อง! (พิมพ์: SK-99999-MASTER หรือ 94850)';
+                errEl.textContent = '❌ รหัสผ่านไม่ถูกต้อง!';
                 errEl.style.display = 'block';
             }
-        }
-
-        function verifyPin(e) {
-            if (e && e.preventDefault) e.preventDefault();
-            verifyPinDirect();
         }
 
         function lockSystem() {
@@ -1362,6 +1332,26 @@
             checkActivationState();
             document.getElementById('repDate').valueAsDate = new Date();
             document.getElementById('obsDate').valueAsDate = new Date();
+            
+            // Touch & Keypress Listeners for Mobile
+            const btn = document.getElementById('btnActivateNow');
+            if (btn) {
+                btn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    executeUnlockProcess();
+                });
+            }
+
+            const inputField = document.getElementById('pinInput');
+            if (inputField) {
+                inputField.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        executeUnlockProcess();
+                    }
+                });
+            }
+
             window.addEventListener('resize', calculateKPIsAndRenderChart);
         };
 
