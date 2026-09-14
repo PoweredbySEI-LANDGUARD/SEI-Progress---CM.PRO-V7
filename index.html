@@ -1134,7 +1134,7 @@
         let savedPin = localStorage.getItem('sei_v7_app_pin') || '94850';
         let isActivated = localStorage.getItem('sei_v7_activated') === 'true';
 
-        // คลังรหัสผ่านที่อนุญาตให้เปิดใช้งานแอปได้
+        // คลังรหัสผ่านที่อนุญาตให้เปิดใช้งานแอปได้ (แปลงให้เป็นตัวพิมพ์ใหญ่และไร้ช่องว่างลบจุดผิดพลาดจากการพิมพ์)
         const validLicenseKeys = [
             'SK-99999-MASTER', // Master Key สำหรับแอดมิน (ใช้งานได้ตลอด)
             '94850',           // รหัสวิศวกรประจำตัว
@@ -1143,7 +1143,7 @@
             'SEI7-5721-P904',  // Customer Key 3
             'SEI7-1048-M372',  // Customer Key 4
             'SEI7-6639-W815'   // Customer Key 5
-        ];
+        ].map(k => k.trim().toUpperCase());
 
         let defaultProjects = [
             { id: "PROJ-001", projName: "โครงการปรับปรุงลานตู้คอนเทนเนอร์ NHP ลาดกระบัง", owner: "บริษัท เอ็น เอช พรอสเพอริตี้ จำกัด", consultant: "บริษัท เอ็น.เอส.พลัส เอ็นจิเนียริ่ง จำกัด", contractor: "บริษัท จุฬารุ่ง เซอร์เวย์ กรุ๊ป จำกัด", startDate: "2026-06-02", finishDate: "2026-09-29", pm: "Punyavee Tanaphu (PM.)", contractValue: 6212000 },
@@ -1280,12 +1280,15 @@
             }
         }
 
+        /* UPDATED: VERIFY PIN ALGORITHM FOR MOBILE & VERCEL */
         function verifyPin(e) {
             e.preventDefault();
-            const inputVal = document.getElementById('pinInput').value.trim().toUpperCase();
+            // ทำการ Sanitize ตัดเว้นวรรคและแปลงเป็นพิมพ์ใหญ่ ป้องกันข้อผิดพลาดจากแป้นพิมพ์มือถือ (Mobile Keyboard Auto-Capitalization / Spaces)
+            const inputVal = document.getElementById('pinInput').value.trim().replace(/\s+/g, '').toUpperCase();
+            const currentSavedPin = savedPin.trim().replace(/\s+/g, '').toUpperCase();
             
-            // เช็กว่ารหัสตรงกับ Master Key, Customer Keys หรือ PIN ในความทรงจำหรือไม่
-            if (validLicenseKeys.includes(inputVal) || inputVal === savedPin.toUpperCase()) {
+            // เช็กว่าตรงกับ Master Key, Customer Keys หรือ PIN ใน LocalStorage หรือไม่
+            if (validLicenseKeys.includes(inputVal) || inputVal === currentSavedPin) {
                 isActivated = true;
                 localStorage.setItem('sei_v7_activated', 'true');
                 document.getElementById('authOverlay').style.display = 'none';
@@ -1306,7 +1309,7 @@
 
         function changePin() {
             const currentPin = prompt('กรุณากรอกรหัส PIN ปัจจุบัน:');
-            if (currentPin === savedPin) {
+            if (currentPin && currentPin.trim().toUpperCase() === savedPin.trim().toUpperCase()) {
                 const newPin = prompt('กรุณากรอกรหัส PIN ใหม่ที่ต้องการตั้ง:');
                 if (newPin && newPin.trim() !== '') {
                     savedPin = newPin.trim();
