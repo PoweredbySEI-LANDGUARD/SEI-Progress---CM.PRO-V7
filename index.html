@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEI™ Progress S-Curve Enterprise Engine (v7.0 Multi-Project Pro) | LAND GUARD GROUP</title>
+    <title>SEI™-PROGRESS CM.-PRO V7 | LAND GUARD GROUP</title>
     <style>
         :root { 
             --primary: #0f172a; 
             --accent: #2563eb; 
             --gold: #d97706; 
+            --gold-bright: #fbbf24;
             --bg: #f8fafc; 
             --success: #16a34a; 
             --danger: #dc2626; 
@@ -45,16 +46,167 @@
         .container { max-width: 1750px; margin: 0 auto; transition: filter 0.3s; position: relative; z-index: 1; }
         .container.locked { filter: blur(12px); pointer-events: none; }
         
-        .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.96); display: flex; justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(10px); }
-        .auth-card { background: white; padding: 40px; border-radius: 18px; box-shadow: 0 25px 30px -5px rgba(0,0,0,0.4); text-align: center; max-width: 440px; width: 90%; }
-        .auth-card h2 { margin-top: 0; color: var(--primary); font-size: 1.45rem; font-weight: 800; }
-        .auth-card input { width: 85%; padding: 12px; font-size: 1.3rem; text-align: center; letter-spacing: 6px; border: 2px solid #cbd5e1; border-radius: 8px; margin: 18px 0; outline: none; }
-        .auth-card input:focus { border-color: var(--accent); }
+        /* AUTH & PAYWALL OVERLAY */
+        .auth-overlay { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: rgba(11, 15, 25, 0.96); 
+            display: flex; justify-content: center; align-items: center; 
+            z-index: 99999; backdrop-filter: blur(10px); 
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .paywall-card { 
+            background: #0f172a; 
+            border: 2px solid var(--gold);
+            border-radius: 20px; 
+            box-shadow: 0 0 35px rgba(217, 119, 6, 0.25); 
+            text-align: center; 
+            max-width: 520px; 
+            width: 100%; 
+            padding: 30px 24px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
 
+        .paywall-title {
+            color: var(--gold-bright);
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .paywall-subtitle {
+            color: #94a3b8;
+            font-size: 0.88rem;
+            margin-top: 6px;
+            margin-bottom: 20px;
+        }
+
+        .price-box {
+            border: 2px dashed #475569;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            background: rgba(30, 41, 59, 0.5);
+        }
+
+        .price-amount {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--gold-bright);
+            line-height: 1;
+        }
+
+        .price-period {
+            font-size: 0.88rem;
+            color: var(--gold-bright);
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .step-instruction {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .qr-wrapper {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 14px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .qr-wrapper img {
+            width: 210px;
+            height: auto;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .account-name-th {
+            color: var(--gold-bright);
+            font-weight: 800;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+
+        .account-name-en {
+            color: #94a3b8;
+            font-size: 0.88rem;
+            margin-bottom: 20px;
+        }
+
+        .activation-form {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .activation-input {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            width: 65%;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .activation-input::placeholder {
+            color: #64748b;
+        }
+
+        .activation-input:focus {
+            border-color: var(--gold-bright);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+        }
+
+        .btn-activate {
+            background: var(--gold-bright);
+            color: #0f172a;
+            font-weight: 900;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-activate:hover {
+            background: #f59e0b;
+            transform: translateY(-1px);
+        }
+
+        .line-contact {
+            margin-top: 24px;
+            border-top: 1px solid #1e293b;
+            padding-top: 16px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .line-contact a {
+            color: var(--gold-bright);
+            font-weight: 800;
+            text-decoration: underline;
+        }
+
+        /* Standard App Styles */
         .header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 16px 24px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--card-shadow); flex-wrap: wrap; gap: 12px; }
         .badge { background: var(--gold); color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; display: inline-block; letter-spacing: 0.5px; }
         
-        /* Multi-Project Bar */
         .project-selector-bar { background: #1e293b; color: white; padding: 10px 18px; border-radius: 10px; margin-top: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-left: 5px solid var(--gold); }
         .project-selector-bar select { padding: 6px 12px; border-radius: 6px; font-weight: bold; background: #0f172a; color: white; border: 1px solid #475569; min-width: 250px; }
 
@@ -233,28 +385,47 @@
 <body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
 
     <div class="watermark-bg">
-        <div class="watermark-text" id="watermarkBrand">SEI™-PROGRESS - S-CURVE : LAND GUARD GROUP</div>
+        <div class="watermark-text" id="watermarkBrand">SEI™-PROGRESS CM.-PRO V7 : LAND GUARD GROUP</div>
     </div>
 
-    <!-- AUTH OVERLAY -->
+    <!-- AUTH & PAYMENT OVERLAY -->
     <div id="authOverlay" class="auth-overlay">
-        <div class="auth-card">
-            <h2>🔒 SEI™ Progress S-Curve Enterprise v7.0</h2>
-            <p style="font-size: 0.92rem; color: #1e293b; font-weight: 800; margin-bottom: 0;">ลิขสิทธิ์วิชาชีพวิศวกรรมโยธา CE.94850</p>
-            <p style="font-size: 0.78rem; color: var(--gold); font-weight: bold; margin-top: 6px;">LAND GUARD GROUP ENTERPRISE ENGINE</p>
-            <form onsubmit="verifyPin(event)">
-                <input type="password" id="pinInput" placeholder="PIN" maxlength="10" autofocus required>
-                <br>
-                <button type="submit" class="btn btn-success" style="width: 85%; padding: 12px; font-size: 1rem;">เข้าสู่ระบบ SEI™ Engine</button>
+        <div class="paywall-card">
+            <h2 class="paywall-title">SEI™-PROGRESS CM.-PRO V7</h2>
+            <p class="paywall-subtitle">ปลดล็อกระบบคำนวณและติดตาม S-Curve รายโครงการถาวร</p>
+            
+            <div class="price-box">
+                <div class="price-amount">฿1,599</div>
+                <div class="price-period">ชำระครั้งเดียว ใช้งานได้ตลอดชีพ</div>
+            </div>
+
+            <div class="step-instruction">1. สแกนชำระเงินผ่าน PromptPay</div>
+            
+            <div class="qr-wrapper">
+                <img src="promptpay-qr.png.jpg" alt="Thai QR Payment PromptPay">
+            </div>
+
+            <div class="account-name-th">ชื่อบัญชี: นาย ปุณยวีร์ ธนภู</div>
+            <div class="account-name-en">(Punyavee Tanaphu)</div>
+
+            <div class="step-instruction">2. กรอกรหัสเปิดใช้งาน (LICENSE KEY)</div>
+            
+            <form class="activation-form" onsubmit="verifyPin(event)">
+                <input type="password" id="pinInput" class="activation-input" placeholder="กรอกรหัสจาก LINE ที่นี่" maxlength="15" required>
+                <button type="submit" class="btn-activate">ACTIVATE</button>
             </form>
-            <p id="pinError" style="color: var(--danger); font-size: 0.82rem; margin-top: 12px; display: none;">รหัสผ่านไม่ถูกต้อง!</p>
+            <p id="pinError" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; font-weight: bold; display: none;">รหัสผ่านไม่ถูกต้อง!</p>
+
+            <div class="line-contact">
+                ส่งสลิปเพื่อรับรหัส ติดต่อ LINE: <a href="https://line.me/ti/p/~upskill456" target="_blank">upskill456</a>
+            </div>
         </div>
     </div>
 
     <div id="appContainer" class="container locked">
         <div class="header">
             <div>
-                <h1 style="margin:0; font-size: 1.35rem; font-weight: 800;">SEI™ Progress S-Curve Enterprise Engine (v7.0 Multi-Project Pro)</h1>
+                <h1 style="margin:0; font-size: 1.35rem; font-weight: 800;">SEI™-PROGRESS CM.-PRO V7 (Multi-Project Pro)</h1>
                 <p style="margin:3px 0 0 0; opacity: 0.88; font-size: 0.8rem;">Systemic Engineering Intelligence | Multi-Project Dynamic S-Curve Engine</p>
             </div>
             <div style="text-align: right;">
@@ -501,7 +672,7 @@
             </div>
         </div>
 
-        <!-- PAGE 4: WEEKLY ACTION TASK LIST (RE-MAPPED DATA FROM OBSTACLES) -->
+        <!-- PAGE 4: WEEKLY ACTION TASK LIST -->
         <div id="tab-actionlist" class="tab-content">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -705,7 +876,7 @@
 
     <!-- STICKY LEGAL FOOTER BAR -->
     <div class="app-footer">
-        <b>SEI™ Grand Enterprise Suite v7.0 Landscape Pro | Multi-Project Edition - LAND GUARD GROUP</b> 
+        <b>SEI™-PROGRESS CM.-PRO V7 | Multi-Project Edition - LAND GUARD GROUP</b> 
         <span style="margin: 0 8px; opacity: 0.5;">|</span> 
         © 2026 Punyavee Tanaphu, Civil Engineer License CE.94850. All Rights Reserved.
     </div>
@@ -955,15 +1126,16 @@
         }
 
         /* STATE MANAGEMENT & MULTI-PROJECT ENGINE */
-        let savedPin = localStorage.getItem('sei_app_pin') || '94850';
+        let savedPin = localStorage.getItem('sei_v7_app_pin') || '94850';
+        let isActivated = localStorage.getItem('sei_v7_activated') === 'true';
 
         let defaultProjects = [
             { id: "PROJ-001", projName: "โครงการปรับปรุงลานตู้คอนเทนเนอร์ NHP ลาดกระบัง", owner: "บริษัท เอ็น เอช พรอสเพอริตี้ จำกัด", consultant: "บริษัท เอ็น.เอส.พลัส เอ็นจิเนียริ่ง จำกัด", contractor: "บริษัท จุฬารุ่ง เซอร์เวย์ กรุ๊ป จำกัด", startDate: "2026-06-02", finishDate: "2026-09-29", pm: "Punyavee Tanaphu (PM.)", contractValue: 6212000 },
             { id: "PROJ-002", projName: "โครงการก่อสร้างอาคารสำนักงานและคลังสินค้า Land Guard Group", owner: "บริษัท แลนด์การ์ด กรุ๊ป จำกัด", consultant: "Tanaphu Engineering", contractor: "บริษัท พัฒนาโครงสร้าง จำกัด", startDate: "2026-01-10", finishDate: "2026-10-31", pm: "Punyavee Tanaphu (CE.94850)", contractValue: 25000000 }
         ];
 
-        let projectsList = JSON.parse(localStorage.getItem('sei_projects_list')) || defaultProjects;
-        let activeProjectId = localStorage.getItem('sei_active_proj_id') || projectsList[0].id;
+        let projectsList = JSON.parse(localStorage.getItem('sei_v7_projects_list')) || defaultProjects;
+        let activeProjectId = localStorage.getItem('sei_v7_active_proj_id') || projectsList[0].id;
 
         let projConfig = {};
         let wbsData = [];
@@ -971,13 +1143,20 @@
         let obstaclesData = [];
         let contractTotalValue = 0;
 
+        function checkActivationState() {
+            if (isActivated) {
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('appContainer').classList.remove('locked');
+            }
+        }
+
         function loadProjectData(projId) {
             activeProjectId = projId;
-            localStorage.setItem('sei_active_proj_id', projId);
+            localStorage.setItem('sei_v7_active_proj_id', projId);
 
             let proj = projectsList.find(p => p.id === projId) || projectsList[0];
             
-            projConfig = JSON.parse(localStorage.getItem(`sei_proj_${projId}_config`)) || {
+            projConfig = JSON.parse(localStorage.getItem(`sei_v7_proj_${projId}_config`)) || {
                 projName: proj.projName,
                 owner: proj.owner,
                 consultant: proj.consultant,
@@ -987,7 +1166,7 @@
                 pm: proj.pm
             };
 
-            contractTotalValue = parseFloat(localStorage.getItem(`sei_proj_${projId}_contract_val`)) || proj.contractValue || 50000000;
+            contractTotalValue = parseFloat(localStorage.getItem(`sei_v7_proj_${projId}_contract_val`)) || proj.contractValue || 50000000;
 
             let defaultWbs = [
                 { code: "1.0", name: "งานเตรียมพื้นที่และโครงสร้างฐานราก", startDate: projConfig.startDate, finishDate: projConfig.finishDate, qty: 1000, unitPrice: 1500, actualQty: 120, unit: "ตร.ม.", amount: 1500000, weight: 24.15, plan: 100.0, actual: 12.0 },
@@ -995,9 +1174,9 @@
                 { code: "3.0", name: "งานระบบวิศวกรรมและเก็บความเรียบร้อย", startDate: projConfig.startDate, finishDate: projConfig.finishDate, qty: 1356, unitPrice: 2000, actualQty: 0, unit: "หน่วย", amount: 2712000, weight: 43.66, plan: 76.47, actual: 0.0 }
             ];
 
-            wbsData = JSON.parse(localStorage.getItem(`sei_proj_${projId}_wbs`)) || defaultWbs;
-            dailyReportsData = JSON.parse(localStorage.getItem(`sei_proj_${projId}_reports`)) || [];
-            obstaclesData = JSON.parse(localStorage.getItem(`sei_proj_${projId}_obstacles`)) || [];
+            wbsData = JSON.parse(localStorage.getItem(`sei_v7_proj_${projId}_wbs`)) || defaultWbs;
+            dailyReportsData = JSON.parse(localStorage.getItem(`sei_v7_proj_${projId}_reports`)) || [];
+            obstaclesData = JSON.parse(localStorage.getItem(`sei_v7_proj_${projId}_obstacles`)) || [];
 
             document.getElementById('contractValInput').value = contractTotalValue;
             loadConfigToForm();
@@ -1039,7 +1218,7 @@
                     contractValue: 10000000
                 };
                 projectsList.push(newProj);
-                localStorage.setItem('sei_projects_list', JSON.stringify(projectsList));
+                localStorage.setItem('sei_v7_projects_list', JSON.stringify(projectsList));
                 switchProject(newId);
                 alert(`✅ สร้างโครงการใหม่ ${newId} เรียบร้อยแล้ว!`);
             }
@@ -1074,12 +1253,12 @@
         function deleteProject(projId) {
             if (confirm(`⚠️ ต้องการลบโครงการ ${projId} ออกจากระบบใช่หรือไม่?`)) {
                 projectsList = projectsList.filter(p => p.id !== projId);
-                localStorage.setItem('sei_projects_list', JSON.stringify(projectsList));
-                localStorage.removeItem(`sei_proj_${projId}_config`);
-                localStorage.removeItem(`sei_proj_${projId}_wbs`);
-                localStorage.removeItem(`sei_proj_${projId}_reports`);
-                localStorage.removeItem(`sei_proj_${projId}_obstacles`);
-                localStorage.removeItem(`sei_proj_${projId}_contract_val`);
+                localStorage.setItem('sei_v7_projects_list', JSON.stringify(projectsList));
+                localStorage.removeItem(`sei_v7_proj_${projId}_config`);
+                localStorage.removeItem(`sei_v7_proj_${projId}_wbs`);
+                localStorage.removeItem(`sei_v7_proj_${projId}_reports`);
+                localStorage.removeItem(`sei_v7_proj_${projId}_obstacles`);
+                localStorage.removeItem(`sei_v7_proj_${projId}_contract_val`);
 
                 switchProject(projectsList[0].id);
             }
@@ -1087,7 +1266,10 @@
 
         function verifyPin(e) {
             e.preventDefault();
-            if (document.getElementById('pinInput').value === savedPin) {
+            const inputVal = document.getElementById('pinInput').value.trim();
+            if (inputVal === savedPin || inputVal === '94850') {
+                isActivated = true;
+                localStorage.setItem('sei_v7_activated', 'true');
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('appContainer').classList.remove('locked');
                 document.getElementById('pinError').style.display = 'none';
@@ -1098,6 +1280,8 @@
         }
 
         function lockSystem() {
+            isActivated = false;
+            localStorage.setItem('sei_v7_activated', 'false');
             document.getElementById('authOverlay').style.display = 'flex';
             document.getElementById('appContainer').classList.add('locked');
         }
@@ -1108,7 +1292,7 @@
                 const newPin = prompt('กรุณากรอกรหัส PIN ใหม่ที่ต้องการตั้ง:');
                 if (newPin && newPin.trim() !== '') {
                     savedPin = newPin.trim();
-                    localStorage.setItem('sei_app_pin', savedPin);
+                    localStorage.setItem('sei_v7_app_pin', savedPin);
                     alert('เปลี่ยนรหัส PIN เรียบร้อยแล้ว!');
                 }
             } else if (currentPin !== null) {
@@ -1118,12 +1302,12 @@
 
         function updateContractValue(val) {
             contractTotalValue = parseFloat(val) || 0;
-            localStorage.setItem(`sei_proj_${activeProjectId}_contract_val`, contractTotalValue);
+            localStorage.setItem(`sei_v7_proj_${activeProjectId}_contract_val`, contractTotalValue);
             
             let projIdx = projectsList.findIndex(p => p.id === activeProjectId);
             if (projIdx >= 0) {
                 projectsList[projIdx].contractValue = contractTotalValue;
-                localStorage.setItem('sei_projects_list', JSON.stringify(projectsList));
+                localStorage.setItem('sei_v7_projects_list', JSON.stringify(projectsList));
             }
 
             autoCalculateWeights();
@@ -1131,15 +1315,16 @@
 
         function resetAllData() {
             if(confirm(`⚠️ คุณต้องการล้างข้อมูลของโครงการ ${activeProjectId} ใช่หรือไม่?`)) {
-                localStorage.removeItem(`sei_proj_${activeProjectId}_wbs`);
-                localStorage.removeItem(`sei_proj_${activeProjectId}_reports`);
-                localStorage.removeItem(`sei_proj_${activeProjectId}_obstacles`);
+                localStorage.removeItem(`sei_v7_proj_${activeProjectId}_wbs`);
+                localStorage.removeItem(`sei_v7_proj_${activeProjectId}_reports`);
+                localStorage.removeItem(`sei_v7_proj_${activeProjectId}_obstacles`);
                 loadProjectData(activeProjectId);
                 alert('✅ ล้างข้อมูลโครงการปัจจุบันเรียบร้อยแล้ว!');
             }
         }
 
         window.onload = function() {
+            checkActivationState();
             document.getElementById('repDate').valueAsDate = new Date();
             document.getElementById('obsDate').valueAsDate = new Date();
             window.addEventListener('resize', calculateKPIsAndRenderChart);
@@ -1173,7 +1358,7 @@
                 projectsList[projIdx].contractor = projConfig.contractor;
                 projectsList[projIdx].startDate = projConfig.startDate;
                 projectsList[projIdx].finishDate = projConfig.finishDate;
-                localStorage.setItem('sei_projects_list', JSON.stringify(projectsList));
+                localStorage.setItem('sei_v7_projects_list', JSON.stringify(projectsList));
             }
 
             saveData();
@@ -1244,7 +1429,7 @@
                 });
                 contractTotalValue = totalVal;
                 document.getElementById('contractValInput').value = contractTotalValue;
-                localStorage.setItem(`sei_proj_${activeProjectId}_contract_val`, contractTotalValue);
+                localStorage.setItem(`sei_v7_proj_${activeProjectId}_contract_val`, contractTotalValue);
             }
             renderAllData();
         }
@@ -1342,7 +1527,6 @@
             }
         }
 
-        /* RE-MAPPING LOGIC FOR WEEKLY ACTION LIST FROM OBSTACLES COUNTERMEASURES */
         function renderActionListTable() {
             const tbody = document.getElementById('actionListTableBody');
             if (!tbody) return;
@@ -1428,10 +1612,10 @@
         }
 
         function saveData() {
-            localStorage.setItem(`sei_proj_${activeProjectId}_config`, JSON.stringify(projConfig));
-            localStorage.setItem(`sei_proj_${activeProjectId}_wbs`, JSON.stringify(wbsData));
-            localStorage.setItem(`sei_proj_${activeProjectId}_reports`, JSON.stringify(dailyReportsData));
-            localStorage.setItem(`sei_proj_${activeProjectId}_obstacles`, JSON.stringify(obstaclesData));
+            localStorage.setItem(`sei_v7_proj_${activeProjectId}_config`, JSON.stringify(projConfig));
+            localStorage.setItem(`sei_v7_proj_${activeProjectId}_wbs`, JSON.stringify(wbsData));
+            localStorage.setItem(`sei_v7_proj_${activeProjectId}_reports`, JSON.stringify(dailyReportsData));
+            localStorage.setItem(`sei_v7_proj_${activeProjectId}_obstacles`, JSON.stringify(obstaclesData));
         }
 
         function calculateKPIsAndRenderChart() {
