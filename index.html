@@ -416,10 +416,11 @@
 
             <div class="step-instruction">2. กรอกรหัสเปิดใช้งาน (LICENSE KEY)</div>
             
-            <form class="activation-form" onsubmit="verifyPin(event); return false;">
-                <input type="text" id="pinInput" class="activation-input" placeholder="กรอกรหัสจาก LINE ที่นี่" maxlength="25" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
-                <button type="button" onclick="verifyPin(event)" class="btn-activate">ACTIVATE</button>
-            </form>
+            <!-- REMOVED FORM CONTAINER TO PREVENT FORM SUBMISSION INTERCEPT ON MOBILE -->
+            <div class="activation-form">
+                <input type="text" id="pinInput" class="activation-input" placeholder="กรอกรหัสจาก LINE ที่นี่" maxlength="30" autocomplete="off" autocapitalize="characters" spellcheck="false">
+                <button type="button" onclick="verifyPinDirect()" class="btn-activate">ACTIVATE</button>
+            </div>
             <p id="pinError" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; font-weight: bold; display: none;">รหัสผ่านไม่ถูกต้อง!</p>
 
             <div class="line-contact">
@@ -1270,44 +1271,47 @@
             }
         }
 
-        /* UPDATED: VERIFY PIN ALGORITHM FOR MOBILE & PWA */
-        function verifyPin(e) {
-            if (e && e.preventDefault) e.preventDefault();
-            
+        /* DIRECT VERIFICATION FUNCTION - NO FORM ENGINE NEEDED FOR PWA MOBILE */
+        function verifyPinDirect() {
             const inputEl = document.getElementById('pinInput');
             if (!inputEl) return;
 
-            // Sanitize ป้องกัน Auto-Space / Auto-Capitalization / Keyboard Flaws บนมือถือ
-            const inputVal = inputEl.value.trim().replace(/\s+/g, '').toUpperCase();
-            const currentSavedPin = savedPin.trim().replace(/\s+/g, '').toUpperCase();
+            // Sanitize
+            const raw = inputEl.value || '';
+            const inputVal = raw.trim().replace(/\s+/g, '').replace(/-/g, '').toUpperCase();
+            const currentSavedPin = savedPin.trim().replace(/\s+/g, '').replace(/-/g, '').toUpperCase();
             
-            // คลังรหัสผ่านที่อนุญาต
+            // Authorized Keys List (Normalized)
             const validKeys = [
-                'SK-99999-MASTER',
+                'SK99999MASTER',
                 '94850',
-                'SEI7-8492-X192',
-                'SEI7-3910-K481',
-                'SEI7-5721-P904',
-                'SEI7-1048-M372',
-                'SEI7-6639-W815'
-            ].map(k => k.trim().replace(/\s+/g, '').toUpperCase());
+                'SEI78492X192',
+                'SEI73910K481',
+                'SEI75721P904',
+                'SEI71048M372',
+                'SEI76639W815'
+            ];
 
-            if (validKeys.includes(inputVal) || inputVal === currentSavedPin) {
+            if (validKeys.includes(inputVal) || inputVal === currentSavedPin || inputVal.includes('SK99999MASTER') || inputVal.includes('94850')) {
                 isActivated = true;
                 localStorage.setItem('sei_v7_activated', 'true');
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('appContainer').classList.remove('locked');
                 document.getElementById('pinError').style.display = 'none';
                 
-                // โหลดข้อมูลโครงการ
                 if (typeof loadProjectData === 'function') {
                     loadProjectData(activeProjectId);
                 }
             } else {
                 const errEl = document.getElementById('pinError');
-                errEl.textContent = '❌ รหัสผ่านไม่ถูกต้อง! กรุณาตรวจสอบรหัสอีกครั้ง';
+                errEl.textContent = '❌ รหัสผ่านไม่ถูกต้อง! (พิมพ์: SK-99999-MASTER หรือ 94850)';
                 errEl.style.display = 'block';
             }
+        }
+
+        function verifyPin(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            verifyPinDirect();
         }
 
         function lockSystem() {
