@@ -416,7 +416,7 @@
             <div class="step-instruction">2. กรอกรหัสเปิดใช้งาน (LICENSE KEY)</div>
             
             <form class="activation-form" onsubmit="verifyPin(event)">
-                <input type="password" id="pinInput" class="activation-input" placeholder="กรอกรหัสจาก LINE ที่นี่" maxlength="15" required>
+                <input type="password" id="pinInput" class="activation-input" placeholder="กรอกรหัสจาก LINE ที่นี่" maxlength="20" required>
                 <button type="submit" class="btn-activate">ACTIVATE</button>
             </form>
             <p id="pinError" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; font-weight: bold; display: none;">รหัสผ่านไม่ถูกต้อง!</p>
@@ -1134,6 +1134,17 @@
         let savedPin = localStorage.getItem('sei_v7_app_pin') || '94850';
         let isActivated = localStorage.getItem('sei_v7_activated') === 'true';
 
+        // คลังรหัสผ่านที่อนุญาตให้เปิดใช้งานแอปได้
+        const validLicenseKeys = [
+            'SK-99999-MASTER', // Master Key สำหรับแอดมิน (ใช้งานได้ตลอด)
+            '94850',           // รหัสวิศวกรประจำตัว
+            'SEI7-8492-X192',  // Customer Key 1
+            'SEI7-3910-K481',  // Customer Key 2
+            'SEI7-5721-P904',  // Customer Key 3
+            'SEI7-1048-M372',  // Customer Key 4
+            'SEI7-6639-W815'   // Customer Key 5
+        ];
+
         let defaultProjects = [
             { id: "PROJ-001", projName: "โครงการปรับปรุงลานตู้คอนเทนเนอร์ NHP ลาดกระบัง", owner: "บริษัท เอ็น เอช พรอสเพอริตี้ จำกัด", consultant: "บริษัท เอ็น.เอส.พลัส เอ็นจิเนียริ่ง จำกัด", contractor: "บริษัท จุฬารุ่ง เซอร์เวย์ กรุ๊ป จำกัด", startDate: "2026-06-02", finishDate: "2026-09-29", pm: "Punyavee Tanaphu (PM.)", contractValue: 6212000 },
             { id: "PROJ-002", projName: "โครงการก่อสร้างอาคารสำนักงานและคลังสินค้า Land Guard Group", owner: "บริษัท แลนด์การ์ด กรุ๊ป จำกัด", consultant: "Tanaphu Engineering", contractor: "บริษัท พัฒนาโครงสร้าง จำกัด", startDate: "2026-01-10", finishDate: "2026-10-31", pm: "Punyavee Tanaphu (CE.94850)", contractValue: 25000000 }
@@ -1271,8 +1282,10 @@
 
         function verifyPin(e) {
             e.preventDefault();
-            const inputVal = document.getElementById('pinInput').value.trim();
-            if (inputVal === savedPin || inputVal === '94850') {
+            const inputVal = document.getElementById('pinInput').value.trim().toUpperCase();
+            
+            // เช็กว่ารหัสตรงกับ Master Key, Customer Keys หรือ PIN ในความทรงจำหรือไม่
+            if (validLicenseKeys.includes(inputVal) || inputVal === savedPin.toUpperCase()) {
                 isActivated = true;
                 localStorage.setItem('sei_v7_activated', 'true');
                 document.getElementById('authOverlay').style.display = 'none';
@@ -1955,5 +1968,4 @@
         }
     </script>
 </body>
-</html>
 </html>
