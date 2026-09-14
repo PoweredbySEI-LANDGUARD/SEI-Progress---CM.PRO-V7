@@ -416,9 +416,9 @@
 
             <div class="step-instruction">2. กรอกรหัสเปิดใช้งาน (LICENSE KEY)</div>
             
-            <form class="activation-form" onsubmit="verifyPin(event)">
-                <input type="password" id="pinInput" class="activation-input" placeholder="กรอกรหัสจาก LINE ที่นี่" maxlength="20" required>
-                <button type="submit" class="btn-activate">ACTIVATE</button>
+            <form class="activation-form" onsubmit="verifyPin(event); return false;">
+                <input type="text" id="pinInput" class="activation-input" placeholder="กรอกรหัสจาก LINE ที่นี่" maxlength="25" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
+                <button type="button" onclick="verifyPin(event)" class="btn-activate">ACTIVATE</button>
             </form>
             <p id="pinError" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; font-weight: bold; display: none;">รหัสผ่านไม่ถูกต้อง!</p>
 
@@ -1135,17 +1135,6 @@
         let savedPin = localStorage.getItem('sei_v7_app_pin') || '94850';
         let isActivated = localStorage.getItem('sei_v7_activated') === 'true';
 
-        // คลังรหัสผ่านที่อนุญาตให้เปิดใช้งานแอปได้ (แปลงให้เป็นตัวพิมพ์ใหญ่และไร้ช่องว่างลบจุดผิดพลาดจากการพิมพ์)
-        const validLicenseKeys = [
-            'SK-99999-MASTER', // Master Key สำหรับแอดมิน (ใช้งานได้ตลอด)
-            '94850',           // รหัสวิศวกรประจำตัว
-            'SEI7-8492-X192',  // Customer Key 1
-            'SEI7-3910-K481',  // Customer Key 2
-            'SEI7-5721-P904',  // Customer Key 3
-            'SEI7-1048-M372',  // Customer Key 4
-            'SEI7-6639-W815'   // Customer Key 5
-        ].map(k => k.trim().toUpperCase());
-
         let defaultProjects = [
             { id: "PROJ-001", projName: "โครงการปรับปรุงลานตู้คอนเทนเนอร์ NHP ลาดกระบัง", owner: "บริษัท เอ็น เอช พรอสเพอริตี้ จำกัด", consultant: "บริษัท เอ็น.เอส.พลัส เอ็นจิเนียริ่ง จำกัด", contractor: "บริษัท จุฬารุ่ง เซอร์เวย์ กรุ๊ป จำกัด", startDate: "2026-06-02", finishDate: "2026-09-29", pm: "Punyavee Tanaphu (PM.)", contractValue: 6212000 },
             { id: "PROJ-002", projName: "โครงการก่อสร้างอาคารสำนักงานและคลังสินค้า Land Guard Group", owner: "บริษัท แลนด์การ์ด กรุ๊ป จำกัด", consultant: "Tanaphu Engineering", contractor: "บริษัท พัฒนาโครงสร้าง จำกัด", startDate: "2026-01-10", finishDate: "2026-10-31", pm: "Punyavee Tanaphu (CE.94850)", contractValue: 25000000 }
@@ -1281,23 +1270,43 @@
             }
         }
 
-        /* UPDATED: VERIFY PIN ALGORITHM FOR MOBILE & VERCEL */
+        /* UPDATED: VERIFY PIN ALGORITHM FOR MOBILE & PWA */
         function verifyPin(e) {
-            e.preventDefault();
-            // ทำการ Sanitize ตัดเว้นวรรคและแปลงเป็นพิมพ์ใหญ่ ป้องกันข้อผิดพลาดจากแป้นพิมพ์มือถือ (Mobile Keyboard Auto-Capitalization / Spaces)
-            const inputVal = document.getElementById('pinInput').value.trim().replace(/\s+/g, '').toUpperCase();
+            if (e && e.preventDefault) e.preventDefault();
+            
+            const inputEl = document.getElementById('pinInput');
+            if (!inputEl) return;
+
+            // Sanitize ป้องกัน Auto-Space / Auto-Capitalization / Keyboard Flaws บนมือถือ
+            const inputVal = inputEl.value.trim().replace(/\s+/g, '').toUpperCase();
             const currentSavedPin = savedPin.trim().replace(/\s+/g, '').toUpperCase();
             
-            // เช็กว่าตรงกับ Master Key, Customer Keys หรือ PIN ใน LocalStorage หรือไม่
-            if (validLicenseKeys.includes(inputVal) || inputVal === currentSavedPin) {
+            // คลังรหัสผ่านที่อนุญาต
+            const validKeys = [
+                'SK-99999-MASTER',
+                '94850',
+                'SEI7-8492-X192',
+                'SEI7-3910-K481',
+                'SEI7-5721-P904',
+                'SEI7-1048-M372',
+                'SEI7-6639-W815'
+            ].map(k => k.trim().replace(/\s+/g, '').toUpperCase());
+
+            if (validKeys.includes(inputVal) || inputVal === currentSavedPin) {
                 isActivated = true;
                 localStorage.setItem('sei_v7_activated', 'true');
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('appContainer').classList.remove('locked');
                 document.getElementById('pinError').style.display = 'none';
-                loadProjectData(activeProjectId);
+                
+                // โหลดข้อมูลโครงการ
+                if (typeof loadProjectData === 'function') {
+                    loadProjectData(activeProjectId);
+                }
             } else {
-                document.getElementById('pinError').style.display = 'block';
+                const errEl = document.getElementById('pinError');
+                errEl.textContent = '❌ รหัสผ่านไม่ถูกต้อง! กรุณาตรวจสอบรหัสอีกครั้ง';
+                errEl.style.display = 'block';
             }
         }
 
