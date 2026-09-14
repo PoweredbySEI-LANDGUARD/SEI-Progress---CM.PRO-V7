@@ -1,0 +1,16 @@
+{
+  "short_name": "SEI PRO V7",
+  "name": "SEI™-PROGRESS CM.-PRO V7",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192 512x512 180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "display": "standalone"
+}
